@@ -21,6 +21,13 @@ class Parameter:
 
     # ============================DP相关参数===============================
     discount_factor = 0.9
+    eps = 0.001
+    max_iter = 100
 
     # ============================画图相关参数===============================
     grid_color_dict = {0: "white", -1: "yellow"}
+    color_forbid = (0.9290, 0.6940, 0.125)
+    color_target = (0.3010, 0.7450, 0.9330)
+    color_policy = (0.4660, 0.6740, 0.1880)
+    color_trajectory = (0, 1, 0)
+    color_agent = (0, 0, 1)

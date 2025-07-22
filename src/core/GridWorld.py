@@ -167,43 +167,6 @@ class GridWorld:
 
         return reward.flatten(), probability
 
-    def value_iteration(self, gamma, eps=1e-5, max_iter=2000):
-        """
-        值迭代算法[1,5](@ref)
-        Args:
-            gamma: 折扣因子(0-1)
-            eps: 收敛阈值
-            max_iter: 最大迭代次数
-        Returns:
-            optim_value: 最优状态值函数
-            optim_policy: 最优策略
-        """
-        # 初始化值函数
-        v = np.zeros((self.get_state_num(),))
-
-        for _ in range(max_iter):
-            # 1. 策略更新：计算Q值
-            q = np.zeros((self.get_state_num(), 4))  # q(s,a)
-            for action in range(4):
-                reward_vec, tran_prob = self.transition(action)
-                # Q(s,a) = R(s,a) + γ * Σ[P(s'|s,a)*V(s')]
-                q[:, action] = reward_vec + gamma * np.matmul(tran_prob, v)
-
-            # 2. 值更新：取最大Q值作为新V值
-            v_tmp = np.max(q, axis=1)
-
-            # 检查收敛
-            if np.linalg.norm(v_tmp - v) < eps:
-                break
-            else:
-                v = v_tmp
-
-        # 计算最优策略
-        optim_value = v
-        optim_policy = np.argmax(q, axis=1)
-
-        return optim_value, optim_policy
-
     def policy_iteration(self, gamma=0.9, max_it=1000, tol=1e-5):
         """
         策略迭代算法[1,5](@ref)

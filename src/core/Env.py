@@ -28,27 +28,25 @@ class GridWorld:
 
     def reset(self):
         """重置开始状态"""
-        if self.random_start:
-            start_row = np.random.randint(0, self.grid.shape[0])
-            start_col = np.random.randint(0, self.grid.shape[1])
-            # 随机选择非禁行状态以及终止状态的网格作为起点
-            while self.grid[start_row, start_col] == -1 and np.array(start_row, start_col) != self.end:
-                start_row = np.random.randint(0, self.grid.shape[0])
-                start_col = np.random.randint(0, self.grid.shape[1])
-            self.start = np.array(start_row, start_col)
-        else:
-            self.start = np.array(self.start)
-        # 重置当前状态为开始状态
         self.current = self.start
 
-    def current2State_ind(self):
+    def state2State_ind(self, state):
         """返回当前状态编号"""
-        row, col = self.current
-        return row * self.grid.shape[1] + col + 1
+        row, col = state
+        return row * self.grid.shape[1] + col
 
-    def step(self, action: Action):
-        """执行动作，返回 (next_state, reward, done)"""
-        row, col = self.current
+    def state_ind2state(self, state):
+        """根据状态编号放回状态对应的网格坐标"""
+        row = state // self.grid.shape[1]
+        col = state % self.grid.shape[1]
+        return np.array((row, col))
+
+    def step_determine(self, state_id, action: Action):
+        """
+        P(s'|s,a)只有一种情况的概率为1，其他情况概率为0
+        根据执行动作，返回 (next_state, reward)
+        """
+        row, col = self.state_ind2state(state_id)
         # 计算新坐标
         if action == Action.UP:
             new_row, new_col = row - 1, col
@@ -58,6 +56,8 @@ class GridWorld:
             new_row, new_col = row + 1, col
         elif action == Action.LEFT:
             new_row, new_col = row, col - 1
+        elif action == Action.STAY:
+            new_row, new_col = row, col
         else:
             raise ValueError(f"未知动作: {action}")
 
@@ -67,11 +67,10 @@ class GridWorld:
             reward = self.boundary_reward
             new_row, new_col = row, col
         # 普通空格
-        elif np.array(new_row-1, new_col-1) != self.end:
+        elif new_row != self.end[0] and new_col != self.end[1]:
             reward = 0.0
         # 终止状态
         else:
             reward = self.target_reward
 
-        self.current = (new_row, new_col)
-        return self.current2State_ind(), reward
+        return self.state2State_ind(np.array((new_row, new_col))), reward
