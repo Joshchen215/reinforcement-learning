@@ -7,7 +7,7 @@ class Action(Enum):
     RIGHT = (0, 1)
     DOWN = (1, 0)
     LEFT = (0, -1)
-    STAY = (0, 0)
+    # STAY = (0, 0)
 
     @staticmethod
     def all_actions():

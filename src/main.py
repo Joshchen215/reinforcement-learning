@@ -8,7 +8,8 @@ if __name__ == '__main__':
                     target_reward=Parameter.init_target_reward, boundary_reward=Parameter.init_boundary_reward,
                     forbidden_reward=Parameter.init_forbidden_reward, random_start=Parameter.init_random_start)
 
-    # Visualizer.plot_env(env)
+    Visualizer.plot_env(env)
     # Visualizer.render(env)
     ValueIteration.optimize(Parameter.discount_factor, Parameter.eps, Parameter.max_iter, env)
+    Visualizer.plot_state_values(env)
     

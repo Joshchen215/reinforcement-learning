@@ -58,7 +58,7 @@ class Visualizer:
         for x in range(weight - 1):
             plt.plot([x + 0.5, x + 0.5], [-0.5, height - 0.5], '-k', lw=2)
         plt.savefig(Parameter.image_path + r'\policy_visualization.png')
-        # plt.show()
+        plt.show()
 
     @staticmethod
     def plot_policy(env, policy, plot_title=None):

@@ -17,7 +17,7 @@ class ValueIteration:
         """
         # 初始化状态值
         v = np.zeros(env.grid.size)
-        q = np.zeros((env.grid.size, len(Action.all_actions())))  # q(s,a)
+        q = np.zeros((env.grid.size, 5))  # q(s,a)
         for _ in range(max_iter):
             # 1. 策略更新：计算Q值
             # 遍历状态

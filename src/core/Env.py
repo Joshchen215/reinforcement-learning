@@ -1,3 +1,5 @@
+from typing import List
+
 import numpy as np
 import matplotlib.pyplot as plt
 from src.core.Enum.Action import Action
@@ -24,6 +26,9 @@ class GridWorld:
         self.forbidden_reward = forbidden_reward
         self.random_start = random_start
         self.current = self.start
+        self.state_values = List
+        self.policy = List
+        self.state_action_value = List
         self.reset()
 
     def reset(self):
@@ -56,8 +61,8 @@ class GridWorld:
             new_row, new_col = row + 1, col
         elif action == Action.LEFT:
             new_row, new_col = row, col - 1
-        elif action == Action.STAY:
-            new_row, new_col = row, col
+        # elif action == Action.STAY:
+        #     new_row, new_col = row, col
         else:
             raise ValueError(f"未知动作: {action}")
 
@@ -66,6 +71,10 @@ class GridWorld:
         if new_row < 0 or new_row >= self.grid.shape[0] or new_col < 0 or new_col >= self.grid.shape[1]:
             reward = self.boundary_reward
             new_row, new_col = row, col
+        # 禁行区域
+        elif self.grid[new_row, new_col] == -1:
+            reward = self.forbidden_reward
+            # new_row, new_col = row, col
         # 普通空格
         elif new_row != self.end[0] and new_col != self.end[1]:
             reward = 0.0
