@@ -3,6 +3,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from src.config.Parameter import Parameter
+from matplotlib.colors import ListedColormap
 
 
 class Visualizer:
@@ -12,7 +13,7 @@ class Visualizer:
         可视化网格世界布局
         """
         plt.figure(figsize=(5, 5), dpi=200)
-        plt.imshow(env.grid <= -1, cmap='binary', interpolation="nearest")
+        plt.imshow(env.grid <= -1, cmap=ListedColormap(['white', 'lightgray']), interpolation="nearest")
         ax = plt.gca()
         ax.grid(False)  # 关闭默认网格
         plt.xticks([])
@@ -40,7 +41,7 @@ class Visualizer:
         """可视化状态值函数"""
         plt.figure(figsize=(5, 5), dpi=200)
         # 用不同灰度表示墙壁和目标状态
-        plt.imshow((env.grid <= -1) + (env.grid > 0) * 0.5, cmap='Greys', vmin=0, vmax=1)
+        plt.imshow((env.grid <= -1) + (env.grid > 0) * 0.5, cmap=ListedColormap(['white', 'lightgray']), vmin=0, vmax=1)
         ax = plt.gca()
         ax.grid(False)
         plt.xticks([])
@@ -48,44 +49,40 @@ class Visualizer:
 
         # 在非终止状态位置显示状态值
         for (state_ind, state_value) in enumerate(env.state_values):
-            y, x = env.state_ind2state(state_ind)
-            plt.text(x, y, round(state_value,2), ha='center', va='center')
+            row, col = env.state_ind2state(state_ind)
+            plt.text(col, row, round(state_value,2), ha='center', va='center')
 
         # 绘制网格线
         height, weight = env.grid.shape
-        for y in range(height - 1):
-            plt.plot([-0.5, weight - 0.5], [y + 0.5, y + 0.5], '-k', lw=2)
-        for x in range(weight - 1):
-            plt.plot([x + 0.5, x + 0.5], [-0.5, height - 0.5], '-k', lw=2)
-        plt.savefig(Parameter.image_path + r'\policy_visualization.png')
+        for row in range(height - 1):
+            plt.plot([-0.5, weight - 0.5], [row + 0.5, row + 0.5], '-k', lw=2)
+        for col in range(weight - 1):
+            plt.plot([col + 0.5, col + 0.5], [-0.5, height - 0.5], '-k', lw=2)
+        plt.savefig(Parameter.image_path + r'\SV_visualization.png')
         # plt.show()
 
     @staticmethod
-    def plot_policy(env, policy, plot_title=None):
+    def plot_policy(env):
         """
         可视化策略
-        Args:
-            policy: (总状态数,)数组，每个状态的动作(0-3)
-            plot_title: 图表标题
         """
         # 动作符号映射
-        action_names = [r"$\uparrow$", r"$\rightarrow$", r"$\downarrow$", r"$\leftarrow$"]
+        action_names = [r"$\uparrow$", r"$\rightarrow$", r"$\downarrow$", r"$\leftarrow$", r"$\circ$"]
         plt.figure(figsize=(5, 5), dpi=200)
-        plt.imshow((env.grid <= -1) + (env.grid > 0) * 0.5, cmap='Greys', vmin=0, vmax=1)
+        plt.imshow((env.grid <= -1) + (env.grid > 0) * 0.5, cmap=ListedColormap(['white', 'lightgray']), vmin=0, vmax=0.2)
         ax = plt.gca()
         ax.grid(False)
         plt.xticks([])
         plt.yticks([])
 
-        if plot_title:
-            plt.title(plot_title)
-
         # 在非终止状态位置显示动作方向
-        for (int_obs, action) in enumerate(policy):
-            y, x = env.int_to_state(int_obs)
-            if (y, x) in env._non_term_states:
-                action_arrow = action_names[action]
-                plt.text(x + 1, y + 1, action_arrow, ha='center', va='center')
+        for (state_ind, actions) in enumerate(env.policy):
+            row, col = env.state_ind2state(state_ind)
+            action_ind = np.argmax(actions)
+            action_arrow = action_names[action_ind]
+            plt.text(col, row, action_arrow, ha='center', va='center')
+
+        plt.savefig(Parameter.image_path + r'\policy_visualization.png')
 
     @staticmethod
     def render(env, animation_interval=0.2):

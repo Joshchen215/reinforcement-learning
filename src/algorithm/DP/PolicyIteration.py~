@@ -32,6 +32,6 @@ class PolicyIteration:
             new_policy = np.argmax(q, axis=1)
             env.policy = np.zeros((env.grid.size, len(Action.all_actions())),dtype=float)
             env.policy[np.arange(env.grid.size), new_policy] = 1
-            # # 检查收敛
-            # if np.linalg.norm(env.state_values - v) < eps:
-            #     break
+            # 检查收敛
+            if np.linalg.norm(env.state_values - v) < eps:
+                break

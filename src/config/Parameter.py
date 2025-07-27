@@ -24,12 +24,15 @@ class Parameter:
     init_target_reward = 1
     init_boundary_reward = -1
     init_forbidden_reward = -10
-    init_random_start = False
 
     # ============================DP相关参数===============================
-    discount_factor = 0
+    discount_factor = 0.9
     eps = 0.00001
-    max_iter = 10
+    max_iter = 100
+
+    # =======================cal_state_value相关参数=======================
+    max_iter_SV = 100
+    discount_factor_SV = 0.9
 
     # ============================画图相关参数===============================
     grid_color_dict = {0: "white", -1: "yellow"}
