@@ -5,14 +5,16 @@ from src.config.Parameter import Parameter
 from src.core.Enum.Action import Action
 from src.core.Env import GridWorld
 
-class PolicyIteration:
+
+class TruncatedPolicyIteration:
     @staticmethod
-    def optimize(discount_factor, eps, max_iter, env: GridWorld):
+    def optimize(discount_factor, eps, max_iter, max_iter_SV, env: GridWorld):
         """
         策略迭代算法
         :param discount_factor: 折扣因子
         :param eps: 收敛阈值
         :param max_iter: 最大迭代次数
+        :param max_iter_SV: 求解V值的最大迭代次数
         :param env: gridWorld环境
         :return:
         """
@@ -20,7 +22,7 @@ class PolicyIteration:
             # 1. 策略评价：计算V值
             # 计算V值
             v = env.state_values  # 保存迭代前的v值
-            CalStateValue.calSV(env, max_iter=Parameter.max_iter_SV, gamma=Parameter.discount_factor_SV)
+            CalStateValue.calSV(env, max_iter=max_iter_SV, gamma=Parameter.discount_factor_SV)
             # 由V值得到q值
             """
             q_Π(s,a) = Σ_(s',r) p(s',r|s,a)r + γ * Σ_s' [P(s'|s,a)*V(s')]
@@ -28,7 +30,6 @@ class PolicyIteration:
             q = np.sum(env.rewards, axis=2) + discount_factor * (env.transition_prob @ env.state_values)
 
             # 2. 策略更新：Π_{k+1}(a|s) = argmax_a Q_k(s,a)
-            # 更新q值
             new_policy = np.argmax(q, axis=1)
             env.policy = np.zeros((env.grid.size, len(Action.all_actions())),dtype=float)
             env.policy[np.arange(env.grid.size), new_policy] = 1

@@ -15,31 +15,19 @@ class ValueIteration:
         :param env: gridWorld环境
         :return:
         """
-        # 初始化状态值
-        v = np.zeros(env.grid.size)
-        q = np.zeros((env.grid.size, len(Action.all_actions())))  # q(s,a)
         for _ in range(max_iter):
+            v = env.state_values
             # 1. 策略更新：计算Q值
-            # 遍历状态
-            for state_id in range(env.grid.size):
-                # 遍历动作
-                for ind, action in enumerate(Action.all_actions()):
-                    # 计算Q值
-                    # Q(s,a) = Σp(r|s,a)r + γ * Σ[P(s'|s,a)*V(s')]
-                    # 在该案例中，可以简化为 Q(s,a) = r + γ * V(s'_{s,a})
-                    next_state, reward = env.step_determine(state_id,action)
-                    q[state_id, ind] = reward + discount_factor * v[next_state]
+            # q_Π(s,a) = Σ_(s',r) p(s',r|s,a)r + γ * Σ_s' [P(s'|s,a)*V(s')]
+            q = np.sum(env.rewards, axis=2) + discount_factor * (env.transition_prob @ env.state_values)
 
             # 2. 策略更新：Π_{k+1}(a|s) = argmax_a Q_k(s,a)
+            new_policy = np.argmax(q, axis=1)
+            env.policy = np.zeros((env.grid.size, len(Action.all_actions())), dtype=float)
+            env.policy[np.arange(env.grid.size), new_policy] = 1
             # 更新V值
-            v_tmp = np.max(q, axis=1)
+            env.state_values = np.max(q, axis=1)
 
             # 检查收敛
-            if np.linalg.norm(v_tmp - v) < eps:
+            if np.linalg.norm(env.state_values - v) < eps:
                 break
-            else:
-                v = v_tmp
-
-        # 计算最优策略
-        env.state_values = v
-        env.state_action_value = np.argmax(q, axis=1)

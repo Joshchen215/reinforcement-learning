@@ -5,6 +5,7 @@ from src.config.Parameter import Parameter
 from src.core.Enum.Action import Action
 from src.core.Env import GridWorld
 
+
 class PolicyIteration:
     @staticmethod
     def optimize(discount_factor, eps, max_iter, env: GridWorld):
@@ -28,10 +29,9 @@ class PolicyIteration:
             q = np.sum(env.rewards, axis=2) + discount_factor * (env.transition_prob @ env.state_values)
 
             # 2. 策略更新：Π_{k+1}(a|s) = argmax_a Q_k(s,a)
-            # 更新q值
             new_policy = np.argmax(q, axis=1)
             env.policy = np.zeros((env.grid.size, len(Action.all_actions())),dtype=float)
             env.policy[np.arange(env.grid.size), new_policy] = 1
-            # # 检查收敛
-            # if np.linalg.norm(env.state_values - v) < eps:
-            #     break
+            # 检查收敛
+            if np.linalg.norm(env.state_values - v) < eps:
+                break

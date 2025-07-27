@@ -1,5 +1,6 @@
 from src.algorithm.DP.CalStateValue import CalStateValue
 from src.algorithm.DP.PolicyIteration import PolicyIteration
+from src.algorithm.DP.TruncatedPolicyIteration import TruncatedPolicyIteration
 from src.algorithm.DP.ValueIteration import ValueIteration
 from src.utils.Visualizer import Visualizer
 from src.config.Parameter import Parameter
@@ -12,7 +13,8 @@ if __name__ == '__main__':
     # Visualizer.plot_env(env)
 
     # ValueIteration.optimize(Parameter.discount_factor, Parameter.eps, Parameter.max_iter, env)
-    PolicyIteration.optimize(Parameter.discount_factor, Parameter.eps, Parameter.max_iter, env)
+    # PolicyIteration.optimize(Parameter.discount_factor, Parameter.eps, Parameter.max_iter, env)
+    TruncatedPolicyIteration.optimize(Parameter.discount_factor, Parameter.eps, Parameter.max_iter, max_iter_SV=5, env=env)  # max_iter_SV表示截断的次数
     Visualizer.plot_state_values(env)
     Visualizer.plot_policy(env)
     
