@@ -17,21 +17,31 @@ class MCBasic:
         :return:
         """
         for _ in range(max_iter):
+            q = np.zeros((env.grid.size, len(Action.all_actions())), dtype=float)
             for state_id in range(env.grid.size):
-                for action_id in range(len(Action.all_actions())):
-                    # 生成足够多的从s,a开始的回合
-                    # 该案例是确定性的，多次运行将得到相同的回合，因此只生成一个回合即可。
-                # 1. 策略评价
-                # 计算q值
-                """
-                q_Π(s,a) = E[G|s,a]
-                """
-                q = np.sum(env.rewards, axis=2) + discount_factor * (env.transition_prob @ env.state_values)
+                for ind, action in enumerate(Action.all_actions()):
+                    """
+                    生成足够多的从s,a开始的回合
+                    该案例是确定性的，多次运行将得到相同的回合，因此只生成一个回合即可。(回合长度设置为15)
+                    q_Π(s,a) = E[G_t|s,a]
+                    G_t = R_t+1 + γ * R_t+2 + γ^2 * R_t+3 + ...
+                    """
+                    g = 0
+                    current_state = state_id
+                    next_state, reward = env.step_determine(current_state, action)
+                    g += reward
+                    for i in range(1, Parameter.episode_length):
+                        current_state = next_state
+                        next_action_id = np.argmax(env.policy[current_state])
+                        next_state, reward = env.step_determine(current_state, Action.all_actions()[next_action_id])
+                        g += reward * (discount_factor ** i)
+                    # 策略评价(计算Q值)
+                    q[state_id, ind] = g
 
                 # 2. 策略更新：Π_{k+1}(a|s) = argmax_a Q_k(s,a)
                 new_policy = np.argmax(q, axis=1)
                 env.policy = np.zeros((env.grid.size, len(Action.all_actions())), dtype=float)
                 env.policy[np.arange(env.grid.size), new_policy] = 1
             # 检查收敛
-            if np.linalg.norm(env.state_values - v) < eps:
-                break
+            # if np.linalg.norm(env.state_values - v) < eps:
+            #     break

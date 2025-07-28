@@ -23,7 +23,7 @@ class Parameter:
     init_end = (3, 2)
     init_target_reward = 1
     init_boundary_reward = -1
-    init_forbidden_reward = -10
+    init_forbidden_reward = -1
 
     # ============================DP相关参数===============================
     discount_factor = 0.9
@@ -33,6 +33,9 @@ class Parameter:
     # =======================cal_state_value相关参数=======================
     max_iter_SV = 100
     discount_factor_SV = 0.9
+
+    # ===============================MC相关参数============================
+    episode_length = 100
 
     # ============================画图相关参数===============================
     grid_color_dict = {0: "white", -1: "yellow"}
